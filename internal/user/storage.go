@@ -1,6 +1,7 @@
 package user
 
 type Repository interface {
-	Accrual(dto UserDTO) error
-	GetBalance(dto UserDTO) (User, error)
+	GetUserById(user UserDTO) User
+	UpdateUser(localUser User) error
+	CreateUser(localUser User) (string, error)
 }

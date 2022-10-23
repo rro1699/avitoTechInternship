@@ -1,0 +1,138 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "description": "API Server for avitoTechInternship application",
+        "title": "Avito-tech internship",
+        "contact": {}
+    },
+    "host": "localhost:8090",
+    "basePath": "/user",
+    "paths": {
+        "/accrual": {
+            "post": {
+                "description": "The method of accruing funds to the balance",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "Accrual",
+                "parameters": [
+                    {
+                        "description": "info about accruing balance",
+                        "name": "input",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/user.UserDTO"
+                        }
+                    }
+                ],
+                "responses": {}
+            }
+        },
+        "/balance": {
+            "post": {
+                "description": "User balance receipt method",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "GetBalance",
+                "parameters": [
+                    {
+                        "description": "user information",
+                        "name": "input",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/user.UserDTO"
+                        }
+                    }
+                ],
+                "responses": {}
+            }
+        },
+        "/recogn": {
+            "post": {
+                "description": "Revenue recognition method",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "Recognition",
+                "parameters": [
+                    {
+                        "description": "recognition information",
+                        "name": "input",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/order.OrderDTO"
+                        }
+                    }
+                ],
+                "responses": {}
+            }
+        },
+        "/reserv": {
+            "post": {
+                "description": "Method of reserving funds of the main balance in a separate account",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "Reservation",
+                "parameters": [
+                    {
+                        "description": "reservation information",
+                        "name": "input",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/order.OrderDTO"
+                        }
+                    }
+                ],
+                "responses": {}
+            }
+        }
+    },
+    "definitions": {
+        "order.OrderDTO": {
+            "type": "object",
+            "properties": {
+                "coast": {
+                    "type": "string"
+                },
+                "idOrder": {
+                    "type": "integer"
+                },
+                "idSer": {
+                    "type": "integer"
+                },
+                "idUser": {
+                    "type": "integer"
+                }
+            }
+        },
+        "user.UserDTO": {
+            "type": "object",
+            "properties": {
+                "coast": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                }
+            }
+        }
+    }
+}

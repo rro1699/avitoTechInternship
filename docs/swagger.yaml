@@ -1,0 +1,91 @@
+basePath: /user
+definitions:
+  order.OrderDTO:
+    properties:
+      coast:
+        type: string
+      idOrder:
+        type: integer
+      idSer:
+        type: integer
+      idUser:
+        type: integer
+    type: object
+  user.UserDTO:
+    properties:
+      coast:
+        type: string
+      id:
+        type: integer
+    type: object
+host: localhost:8090
+info:
+  contact: {}
+  description: API Server for avitoTechInternship application
+  title: Avito-tech internship
+paths:
+  /accrual:
+    post:
+      consumes:
+      - application/json
+      description: The method of accruing funds to the balance
+      parameters:
+      - description: info about accruing balance
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/user.UserDTO'
+      produces:
+      - application/json
+      responses: {}
+      summary: Accrual
+  /balance:
+    post:
+      consumes:
+      - application/json
+      description: User balance receipt method
+      parameters:
+      - description: user information
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/user.UserDTO'
+      produces:
+      - application/json
+      responses: {}
+      summary: GetBalance
+  /recogn:
+    post:
+      consumes:
+      - application/json
+      description: Revenue recognition method
+      parameters:
+      - description: recognition information
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/order.OrderDTO'
+      produces:
+      - application/json
+      responses: {}
+      summary: Recognition
+  /reserv:
+    post:
+      consumes:
+      - application/json
+      description: Method of reserving funds of the main balance in a separate account
+      parameters:
+      - description: reservation information
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/order.OrderDTO'
+      produces:
+      - application/json
+      responses: {}
+      summary: Reservation
+swagger: "2.0"

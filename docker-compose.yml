@@ -1,0 +1,23 @@
+version: "3.8"
+
+services:
+  mysqldb:
+    image: mysql:5.7
+    restart: unless-stopped
+    environment:
+      - MYSQL_ROOT_PASSWORD=root
+      - MYSQL_DATABASE=godb
+    ports:
+      - "3307:3306"
+    volumes:
+      - ./dbDump:/docker-entrypoint-initdb.d
+  app:
+    depends_on:
+      - mysqldb
+    build: ./
+    command: ./avitoTechInternship
+    restart: on-failure
+    ports:
+      - "10000:8090"
+    stdin_open: true
+    tty: true

@@ -19,22 +19,31 @@ func NewRepository(database *sql.DB, logger *logging.Logger) order.Repository {
 	}
 }
 
-func (d *databaseOperations) Reservation(dto order.OrderDTO) error {
-	d.logger.Debug("Reservation money")
+func (d *databaseOperations) Create(dto order.OrderDTO) error {
 	_, err := d.database.Exec("INSERT INTO orders(idUser,idSer,idOrder,coast, state) VALUES (?,?,?,?,?)",
 		dto.IdUser, dto.IdSer, dto.IdOrder, dto.Coast, "reserved")
 	if err != nil {
-		return fmt.Errorf("failed reservation money: %v", err)
+		return fmt.Errorf("failed reservation money")
 	}
 	return nil
 }
 
-func (d *databaseOperations) Recognition(dto order.OrderDTO) error {
-	d.logger.Debug("Recognition order")
-	_, err := d.database.Query("UPDATE orders set state = ? WHERE idUser = ?,idSer = ?,idOrder = ?,coast = ?",
+func (d *databaseOperations) GetStateByParams(dto order.OrderDTO) order.Order {
+	row := d.database.QueryRow("SELECT state FROM orders WHERE idUser = ? AND idSer = ? AND idOrder = ? AND coast = ?",
+		dto.IdUser, dto.IdSer, dto.IdOrder, dto.Coast)
+	var localOrder order.Order
+	err := row.Scan(&localOrder.State)
+	if err != nil {
+		return order.Order{}
+	}
+	return localOrder
+}
+
+func (d *databaseOperations) UpdateOrder(dto order.OrderDTO) error {
+	_, err := d.database.Query("UPDATE orders SET state = ? WHERE idUser = ? AND idSer = ? AND idOrder = ? AND coast = ?",
 		"recognition", dto.IdUser, dto.IdSer, dto.IdOrder, dto.Coast)
 	if err != nil {
-		return fmt.Errorf("failed recognition order: %v", err)
+		return fmt.Errorf("failed recognition order")
 	}
 	return nil
 }

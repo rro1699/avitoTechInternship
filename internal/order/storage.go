@@ -1,6 +1,7 @@
 package order
 
 type Repository interface {
-	Reservation(dto OrderDTO) error
-	Recognition(dto OrderDTO) error
+	Create(dto OrderDTO) error
+	GetStateByParams(dto OrderDTO) Order
+	UpdateOrder(dto OrderDTO) error
 }

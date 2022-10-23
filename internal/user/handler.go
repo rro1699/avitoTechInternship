@@ -15,16 +15,14 @@ const (
 )
 
 type handler struct {
-	logger       *logging.Logger
-	serviceUser  *Service
-	serviceOrder *order.Service
+	logger      *logging.Logger
+	serviceUser *Service
 }
 
-func NewHandler(logger *logging.Logger, serviceUser *Service, serviceOrder *order.Service) handlers.Handler {
+func NewHandler(logger *logging.Logger, serviceUser *Service) handlers.Handler {
 	return &handler{
-		logger:       logger,
-		serviceUser:  serviceUser,
-		serviceOrder: serviceOrder,
+		logger:      logger,
+		serviceUser: serviceUser,
 	}
 }
 
@@ -32,10 +30,15 @@ func (h *handler) Register(router *httprouter.Router) {
 	router.POST(fmt.Sprintf("%saccrual", userURL), h.Accrual)
 	router.POST(fmt.Sprintf("%sreserv", userURL), h.Reservation)
 	router.POST(fmt.Sprintf("%srecogn", userURL), h.Recognition)
-	router.GET(fmt.Sprintf("%sbalance", userURL), h.GetBalance)
-
+	router.POST(fmt.Sprintf("%sbalance", userURL), h.GetBalance)
 }
 
+// @Summary Accrual
+// @Description The method of accruing funds to the balance
+// @Accept  json
+// @Produce  json
+// @Param input body UserDTO true "info about accruing balance"
+// @Router /accrual [post]
 func (h *handler) Accrual(writer http.ResponseWriter, request *http.Request, params httprouter.Params) {
 	headerContentType := request.Header.Get("Content-Type")
 	if headerContentType != "application/json" {
@@ -49,15 +52,23 @@ func (h *handler) Accrual(writer http.ResponseWriter, request *http.Request, par
 		h.errorResponse(writer, err.Error(), http.StatusBadRequest)
 		return
 	}
-	err = h.serviceUser.Accrual(&reqData)
+	id, err := h.serviceUser.Accrual(&reqData)
 	if err != nil {
 		h.errorResponse(writer, err.Error(), http.StatusBadRequest)
 		return
 	}
-	writer.WriteHeader(http.StatusOK)
+
+	message := fmt.Sprintf("Accrual for user with id:%s succesfully ended", id)
+	h.successResponse(writer, message, http.StatusOK)
 	return
 }
 
+// @Summary Reservation
+// @Description Method of reserving funds of the main balance in a separate account
+// @Accept  json
+// @Produce  json
+// @Param input body order.OrderDTO true "reservation information"
+// @Router /reserv [post]
 func (h *handler) Reservation(writer http.ResponseWriter, request *http.Request, params httprouter.Params) {
 	headerContentType := request.Header.Get("Content-Type")
 	if headerContentType != "application/json" {
@@ -71,15 +82,21 @@ func (h *handler) Reservation(writer http.ResponseWriter, request *http.Request,
 		h.errorResponse(writer, err.Error(), http.StatusBadRequest)
 		return
 	}
-	err = h.serviceOrder.Reservation(&reqData)
+	message, err := h.serviceUser.Reservation(&reqData)
 	if err != nil {
 		h.errorResponse(writer, err.Error(), http.StatusBadRequest)
 		return
 	}
-	writer.WriteHeader(http.StatusOK)
+	h.successResponse(writer, message, http.StatusOK)
 	return
 }
 
+// @Summary Recognition
+// @Description Revenue recognition method
+// @Accept  json
+// @Produce  json
+// @Param input body order.OrderDTO true "recognition information"
+// @Router /recogn [post]
 func (h *handler) Recognition(writer http.ResponseWriter, request *http.Request, params httprouter.Params) {
 	headerContentType := request.Header.Get("Content-Type")
 	if headerContentType != "application/json" {
@@ -94,16 +111,21 @@ func (h *handler) Recognition(writer http.ResponseWriter, request *http.Request,
 		return
 	}
 
-	err = h.serviceOrder.Recognition(&reqData)
+	message, err := h.serviceUser.Recognition(&reqData)
 	if err != nil {
 		h.errorResponse(writer, err.Error(), http.StatusBadRequest)
 		return
 	}
-
-	writer.WriteHeader(http.StatusOK)
+	h.successResponse(writer, message, http.StatusOK)
 	return
 }
 
+// @Summary GetBalance
+// @Description User balance receipt method
+// @Accept  json
+// @Produce  json
+// @Param input body UserDTO true "user information"
+// @Router /balance [post]
 func (h *handler) GetBalance(writer http.ResponseWriter, request *http.Request, params httprouter.Params) {
 	headerContentType := request.Header.Get("Content-Type")
 	if headerContentType != "application/json" {
@@ -134,6 +156,15 @@ func (h *handler) GetBalance(writer http.ResponseWriter, request *http.Request, 
 }
 
 func (h *handler) errorResponse(w http.ResponseWriter, message string, httpStatusCode int) {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(httpStatusCode)
+	resp := make(map[string]string)
+	resp["message"] = message
+	jsonResp, _ := json.Marshal(resp)
+	h.logger.Error(w.Write(jsonResp))
+}
+
+func (h *handler) successResponse(w http.ResponseWriter, message string, httpStatusCode int) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(httpStatusCode)
 	resp := make(map[string]string)

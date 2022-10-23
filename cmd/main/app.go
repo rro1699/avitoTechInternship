@@ -1,8 +1,8 @@
 package main
 
 import (
+	_ "avitoTechInternship/docs"
 	"avitoTechInternship/internal/config"
-	"avitoTechInternship/internal/order"
 	orderDB "avitoTechInternship/internal/order/db"
 	"avitoTechInternship/internal/user"
 	userDB "avitoTechInternship/internal/user/db"
@@ -10,28 +10,35 @@ import (
 	"avitoTechInternship/pkg/logging"
 	"fmt"
 	"github.com/julienschmidt/httprouter"
+	httpSwagger "github.com/swaggo/http-swagger"
 	"net"
 	"net/http"
 	"time"
 )
 
+// @title Avito-tech internship
+// @description API Server for avitoTechInternship application
+
+//@host localhost:8090
+//@BasePath /user
+
 func main() {
 	logger := logging.GetLogger()
 	logger.Info("create router")
 	router := httprouter.New()
-
 	localConfig := config.GetConfig()
+
+	router.Handler(http.MethodGet, "/swagger/*any", httpSwagger.Handler())
 	localDB := mysqldb.NewClient(localConfig, logger)
 
 	userRepo := userDB.NewRepository(localDB, logger)
 	orderRepo := orderDB.NewRepository(localDB, logger)
 
-	userService := user.NewService(userRepo, logger)
-	orderService := order.NewService(orderRepo, logger)
+	userService := user.NewService(orderRepo, userRepo, logger)
 
 	logger.Info("register handler")
 
-	handler := user.NewHandler(logger, userService, orderService)
+	handler := user.NewHandler(logger, userService)
 	handler.Register(router)
 
 	logger.Info("start server")
