@@ -52,7 +52,7 @@ func (d *databaseOperations) UpdateOrder(dto order.OrderDTO) error {
 }
 
 func (d *databaseOperations) GetOrdersByDate(year, month, lastDay int) []order.Order {
-	//IdSer,Coast,Date
+
 	startDate := fmt.Sprintf("%d-%d-%.2d", year, month, 1)
 	endDate := fmt.Sprintf("%d-%d-%.2d", year, month, lastDay)
 
