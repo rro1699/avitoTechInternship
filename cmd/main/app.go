@@ -4,6 +4,7 @@ import (
 	_ "avitoTechInternship/docs"
 	"avitoTechInternship/internal/config"
 	orderDB "avitoTechInternship/internal/order/db"
+	reportDB "avitoTechInternship/internal/report/db"
 	"avitoTechInternship/internal/user"
 	userDB "avitoTechInternship/internal/user/db"
 	"avitoTechInternship/pkg/client/mysqldb"
@@ -33,8 +34,8 @@ func main() {
 
 	userRepo := userDB.NewRepository(localDB, logger)
 	orderRepo := orderDB.NewRepository(localDB, logger)
-
-	userService := user.NewService(orderRepo, userRepo, logger)
+	reportRepo := reportDB.NewRepository(localDB, logger)
+	userService := user.NewService(orderRepo, reportRepo, userRepo, logger)
 
 	logger.Info("register handler")
 

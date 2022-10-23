@@ -11,6 +11,13 @@ definitions:
       idUser:
         type: integer
     type: object
+  report.ReportDTO:
+    properties:
+      month:
+        type: integer
+      year:
+        type: integer
+    type: object
   user.UserDTO:
     properties:
       coast:
@@ -72,6 +79,22 @@ paths:
       - application/json
       responses: {}
       summary: Recognition
+  /report:
+    post:
+      consumes:
+      - application/json
+      description: method to get monthly report
+      parameters:
+      - description: information about date
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/report.ReportDTO'
+      produces:
+      - application/json
+      responses: {}
+      summary: GetReport
   /reserv:
     post:
       consumes:

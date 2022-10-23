@@ -3,6 +3,7 @@ package user
 import (
 	"avitoTechInternship/internal/handlers"
 	"avitoTechInternship/internal/order"
+	"avitoTechInternship/internal/report"
 	"avitoTechInternship/pkg/logging"
 	"encoding/json"
 	"fmt"
@@ -31,6 +32,7 @@ func (h *handler) Register(router *httprouter.Router) {
 	router.POST(fmt.Sprintf("%sreserv", userURL), h.Reservation)
 	router.POST(fmt.Sprintf("%srecogn", userURL), h.Recognition)
 	router.POST(fmt.Sprintf("%sbalance", userURL), h.GetBalance)
+	router.POST(fmt.Sprintf("%sreport", userURL), h.GetReport)
 }
 
 // @Summary Accrual
@@ -151,17 +153,46 @@ func (h *handler) GetBalance(writer http.ResponseWriter, request *http.Request, 
 	}
 	writer.Header().Set("Content-Type", "application/json")
 	writer.WriteHeader(http.StatusOK)
-	h.logger.Error(writer.Write(respData))
+	writer.Write(respData)
+	return
+}
+
+// @Summary GetReport
+// @Description method to get monthly report
+// @Accept  json
+// @Produce  json
+// @Param input body report.ReportDTO true "information about date"
+// @Router /report [post]
+func (h *handler) GetReport(writer http.ResponseWriter, request *http.Request, params httprouter.Params) {
+	headerContentType := request.Header.Get("Content-Type")
+	if headerContentType != "application/json" {
+		h.errorResponse(writer, "Content Type is not application/json", http.StatusUnsupportedMediaType)
+		return
+	}
+	var reqData report.ReportDTO
+	decoder := json.NewDecoder(request.Body)
+	err := decoder.Decode(&reqData)
+	if err != nil {
+		h.errorResponse(writer, err.Error(), http.StatusBadRequest)
+		return
+	}
+	filePath, err := h.serviceUser.GetReport(&reqData)
+	if err != nil {
+		h.errorResponse(writer, err.Error(), http.StatusBadRequest)
+		return
+	}
+	h.successResponse(writer, filePath, http.StatusOK)
 	return
 }
 
 func (h *handler) errorResponse(w http.ResponseWriter, message string, httpStatusCode int) {
+	h.logger.Info(message)
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(httpStatusCode)
 	resp := make(map[string]string)
 	resp["message"] = message
 	jsonResp, _ := json.Marshal(resp)
-	h.logger.Error(w.Write(jsonResp))
+	w.Write(jsonResp)
 }
 
 func (h *handler) successResponse(w http.ResponseWriter, message string, httpStatusCode int) {
@@ -170,5 +201,5 @@ func (h *handler) successResponse(w http.ResponseWriter, message string, httpSta
 	resp := make(map[string]string)
 	resp["message"] = message
 	jsonResp, _ := json.Marshal(resp)
-	h.logger.Error(w.Write(jsonResp))
+	w.Write(jsonResp)
 }

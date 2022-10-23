@@ -88,6 +88,30 @@ const docTemplate = `{
                 "responses": {}
             }
         },
+        "/report": {
+            "post": {
+                "description": "method to get monthly report",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "summary": "GetReport",
+                "parameters": [
+                    {
+                        "description": "information about date",
+                        "name": "input",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/report.ReportDTO"
+                        }
+                    }
+                ],
+                "responses": {}
+            }
+        },
         "/reserv": {
             "post": {
                 "description": "Method of reserving funds of the main balance in a separate account",
@@ -127,6 +151,17 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "idUser": {
+                    "type": "integer"
+                }
+            }
+        },
+        "report.ReportDTO": {
+            "type": "object",
+            "properties": {
+                "month": {
+                    "type": "integer"
+                },
+                "year": {
                     "type": "integer"
                 }
             }

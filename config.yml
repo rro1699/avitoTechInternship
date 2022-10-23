@@ -5,6 +5,6 @@ listen:
 db:
   user: root
   password: root
-  host: localhost
-  port: 3307
+  host: mysqldb
+  port: 3306
   db_name: godb

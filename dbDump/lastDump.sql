@@ -29,6 +29,7 @@ CREATE TABLE `orders` (
   `idOrder` int NOT NULL,
   `coast` varchar(15) NOT NULL,
   `state` varchar(12) NOT NULL,
+  `orderDate` date NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -65,6 +66,30 @@ LOCK TABLES `users` WRITE;
 /*!40000 ALTER TABLE `users` DISABLE KEYS */;
 /*!40000 ALTER TABLE `users` ENABLE KEYS */;
 UNLOCK TABLES;
+
+--
+-- Table structure for table `servs`
+--
+DROP TABLE IF EXISTS `servs`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `servs` (
+                          `id` int NOT NULL AUTO_INCREMENT,
+                          `name` varchar(100) NOT NULL,
+                          PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `servs`
+--
+
+LOCK TABLES `servs` WRITE;
+/*!40000 ALTER TABLE `servs` DISABLE KEYS */;
+INSERT INTO `servs` VALUES (1,'test1'),(2,'тест1');
+/*!40000 ALTER TABLE `servs` ENABLE KEYS */;
+UNLOCK TABLES;
+
 
 --
 -- Dumping events for database 'godb'
